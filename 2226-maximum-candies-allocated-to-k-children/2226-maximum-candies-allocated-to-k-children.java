@@ -1,60 +1,33 @@
 class Solution {
-  int ans;
-  long k;
 
-  public int maximumCandies(int[] candies, long k) {
-    this.ans = 0;
-    this.k = k;
-
-    int min = 1;
-    int max = 0;
-
-    // Find min value(can be max for answer)
-    for(int i=0 ; i < candies.length ; i++){
-      if(candies[i] > max) {
-        max = candies[i];
-      }
-    }
-
-    bSearch(candies,min,max);
-
-    return this.ans;
-
-  }
-
-  public void bSearch(int[] candies, int first, int end){
-    if(!check(candies,first)) {return;}
-    if(check(candies,end)) {
-      this.ans = end;
-      return;
-    }
-
-    int mid = (first+end)/2;
-    if (mid == first) return;
-
-    if(check(candies,mid)){
-      bSearch(candies,mid,end);
-
-    }
-    else{
-      bSearch(candies,first,mid);
-    }
-  }
-
-  public boolean check(int[] candies , int pile){
-    long sum = 0L;
-    for(int i=0; i < candies.length ; i++){
-      sum += candies[i] / pile;
-
-      if(sum >= this.k){
-        if(this.ans < pile){
-          this.ans = pile;
+    public int maximumCandies(int[] candies, long k) {
+        int left = 1, right = 0;
+        for (int candy : candies) {
+            right = Math.max(right, candy); // 최대값 찾기
         }
         
-        return true;
-      }
+        int result = 0;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            
+            if (canDistribute(candies, k, mid)) {
+                result = mid; // mid 값이 가능하면 더 큰 값 탐색
+                left = mid + 1;
+            } else {
+                right = mid - 1; // mid 값이 불가능하면 줄임
+            }
+        }
+        return result;
     }
-    return false;
-  }
+
+    private boolean canDistribute(int[] candies, long k, int mid) {
+        if (mid == 0) return false;
+        long count = 0;
+        for (int candy : candies) {
+            count += candy / mid;
+            if (count >= k) return true; // k 명에게 나눠줄 수 있으면 가능
+        }
+        return false;
+    }
 
 }
